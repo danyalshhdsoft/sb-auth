@@ -13,13 +13,16 @@ export class AppController {
 
   @MessagePattern('get_user')
   getUser(data: any) {
-    console.log("shaheeer checking...", JSON.stringify(data));
     return this.appService.getUser(data.value);
   }
 
-  // @MessagePattern('get_user.reply')
-  // getUserReply(data: any) {
-  //   console.log("return topic printing");
-    
-  // }
+  @MessagePattern('login')
+  async login(data: any) {
+    return await this.appService.signin(data.value);
+  }
+
+  @MessagePattern('register')
+  async register(data: any) {
+    return await this.appService.register(data.value);
+  }
 }
