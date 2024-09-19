@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  Inject,
   // BadRequestException,
   Injectable,
   UnauthorizedException,
@@ -11,14 +13,21 @@ import { User } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { RegisterUserDto } from './dto/auth.dto';
 // import { OTP_TOKEN_TYPES } from './schema/otp-tokens.schema';
+import { OtpTokensService } from './otp-tokens/otp-tokens.service';
+//import { EmailService } from './email/email.service';
 import { AuthJwtService } from './auth/jwt/jwt.service';
+import { OTP_TOKEN_TYPES } from './schema/otp-tokens.schema';
+import { ConfigService } from '@nestjs/config';
+import { EmailService } from './email/email.service';
 @Injectable()
 export class AppService {
   constructor(
     private jwtService: JwtService,
     private readonly authJwtService: AuthJwtService,
-    //private emailService: EmailService,
+    private emailService: EmailService,
+    private verificationCodeService: OtpTokensService,
     @InjectModel(User.name) private userModel: Model<User>,
+    @Inject(ConfigService) private config: ConfigService,
   ) {}
 
   private readonly users: any[] = [
@@ -84,12 +93,12 @@ export class AppService {
       password: hashPass,
     });
 
-    // const otp = await this.verificationCodeService.createVerificationCode(
-    //   newUser,
-    //   OTP_TOKEN_TYPES.EMAIL_VERIFICATION,
-    // );
+    const otp = await this.verificationCodeService.createVerificationCode(
+      newUser,
+      OTP_TOKEN_TYPES.EMAIL_VERIFICATION,
+    );
 
-    //this.emailService.sendUserWelcome(newUser, otp.code);
+    this.emailService.sendUserWelcome(newUser, otp.code);
 
     const token = this.generateJwt({
       sub: newUser.id,
@@ -103,6 +112,22 @@ export class AppService {
         user: this.getUserBasicData(newUser),
       },
     };
+  }
+
+  async forgotPasswordRequest(email: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) throw new BadRequestException('No user exists with this email');
+
+    const token = this.generateJwt({
+      sub: user._id,
+      email: user.email,
+    });
+
+    const frontendUrl = this.config.get<string>('FRONTEND_URL');
+    const link = `${frontendUrl}/reset-password?token=${token}`;
+
+    this.emailService.resetPasswordEmail(user, link);
+    return 'Reset Password Email Sent';
   }
 
   async hashPassword(password: string) {

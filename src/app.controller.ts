@@ -26,6 +26,25 @@ export class AppController {
     return await this.appService.register(data.value);
   }
 
+  @MessagePattern('forgot-password')
+  async requestForgotPassword(data: any) {
+    return await this.appService.forgotPasswordRequest(data.email)
+      .then(res => res)
+      .catch(err => err);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  // @Post('reset-password')
+  // async ressetPassword(
+  //   @Body() resetPasswordDto: ResetPasswordDto,
+  //   @Req() req: any,
+  // ) {
+  //   return await this.appService.resetPassword(
+  //     resetPasswordDto.password,
+  //     req.user.id,
+  //   );
+  // }
+
   @MessagePattern('authorize_user', Transport.KAFKA) // Listening for 'authorize_user' event
   async authorizeUser(data: any) {
     try {
