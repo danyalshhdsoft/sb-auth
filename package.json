@@ -34,6 +34,8 @@
     "bcryptjs": "^2.4.3",
     "cache-manager": "^5.7.6",
     "class-validator": "^0.14.1",
+    "fs": "^0.0.1-security",
+    "handlebars": "^4.7.8",
     "kafkajs": "^1.15.0",
     "mongoose": "^8.6.2",
     "nodemailer": "^6.9.15",

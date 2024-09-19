@@ -6,8 +6,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { User, UserSchema } from './schema/user.schema';
 import { OtpTokensModule } from './otp-tokens/otp-tokens.module';
-//import { EmailModule } from './email/email.module';
 import { AuthJwtService } from './auth/jwt/jwt.service';
+import { EmailModule } from './email/email.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -38,7 +38,7 @@ import { AuthJwtService } from './auth/jwt/jwt.service';
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     OtpTokensModule,
-    //EmailModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthJwtService],
