@@ -7,7 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { User, UserSchema } from './schema/user.schema';
 import { OtpTokensModule } from './otp-tokens/otp-tokens.module';
 //import { EmailModule } from './email/email.module';
-
+import { AuthJwtService } from './auth/jwt/jwt.service';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -41,6 +41,7 @@ import { OtpTokensModule } from './otp-tokens/otp-tokens.module';
     //EmailModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AuthJwtService],
+  exports: [AppService],
 })
 export class AppModule {}

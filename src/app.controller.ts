@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, RpcException, Transport } from '@nestjs/microservices';
 import { AppService } from './app.service';
 
 @Controller()
@@ -24,5 +24,17 @@ export class AppController {
   @MessagePattern('register')
   async register(data: any) {
     return await this.appService.register(data.value);
+  }
+
+  @MessagePattern('authorize_user', Transport.KAFKA) // Listening for 'authorize_user' event
+  async authorizeUser(data: any) {
+    try {
+      console.log('Authorization Service pinging....');
+      const isValid = await this.appService.validateUser(data.value.token);
+      return isValid;
+    } catch (oError) {
+      console.error('Error while authorizing user:', oError);
+      throw new RpcException(oError);
+    }
   }
 }
