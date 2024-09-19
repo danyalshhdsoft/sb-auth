@@ -8,7 +8,7 @@ export enum USER_TYPES {
 
 export enum GENDER {
   MALE = 'MALE',
-  FEMALE = 'FEMALE'
+  FEMALE = 'FEMALE',
 }
 
 class License {
@@ -20,7 +20,6 @@ class License {
 }
 
 class Agent {
-  
   @Prop()
   experience: number;
 
@@ -35,6 +34,9 @@ class Agent {
 
   @Prop()
   license: License[];
+
+  @Prop()
+  saltToken: string;
 }
 
 @Schema({ timestamps: true })
@@ -68,15 +70,15 @@ export class User extends Document {
   @Prop()
   lastName: string;
 
-//   @Prop({
-//     enum: LANGUAGE
-//   })
-//   language: string;
+  //   @Prop({
+  //     enum: LANGUAGE
+  //   })
+  //   language: string;
 
-//   @Prop({
-//     enum: USER_STATUS
-//   })
-//   status: string;
+  //   @Prop({
+  //     enum: USER_STATUS
+  //   })
+  //   status: string;
 
   @Prop()
   password: string;
@@ -88,12 +90,12 @@ export class User extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Country' })
   country?: mongoose.Types.ObjectId;
 
-//   @Prop({
-//     default: null,
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'role',
-//   })
-//   role?: Role;
+  //   @Prop({
+  //     default: null,
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: 'role',
+  //   })
+  //   role?: Role;
 
   @Prop()
   phone: number;
@@ -106,6 +108,9 @@ export class User extends Document {
 
   @Prop()
   agent: Agent;
+
+  @Prop()
+  saltToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

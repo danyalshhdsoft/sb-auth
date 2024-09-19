@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { User, UserSchema } from './schema/user.schema';
-
+import { AuthJwtService } from './auth/jwt/jwt.service';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -37,6 +37,7 @@ import { User, UserSchema } from './schema/user.schema';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AuthJwtService],
+  exports: [AppService],
 })
 export class AppModule {}

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  // BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { GetUserRequest } from './get-user-request.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -6,13 +10,13 @@ import { Model } from 'mongoose';
 import { User } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { RegisterUserDto } from './dto/auth.dto';
-import { OTP_TOKEN_TYPES } from './schema/otp-tokens.schema';
-
+// import { OTP_TOKEN_TYPES } from './schema/otp-tokens.schema';
+import { AuthJwtService } from './auth/jwt/jwt.service';
 @Injectable()
 export class AppService {
-
   constructor(
     private jwtService: JwtService,
+    private readonly authJwtService: AuthJwtService,
     //private emailService: EmailService,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
@@ -56,8 +60,8 @@ export class AppService {
     if (!(await bcrypt.compare(user.password, userExists?.password))) {
       return {
         status: 400,
-        data: "Incorrect Password"
-      }
+        data: 'Incorrect Password',
+      };
     }
 
     const token = this.generateJwt({
@@ -65,11 +69,11 @@ export class AppService {
       email: userExists.email,
     });
     return {
-        status: 200, 
-        data: {
-          token, 
-          user: this.getUserBasicData(userExists) 
-        }
+      status: 200,
+      data: {
+        token,
+        user: this.getUserBasicData(userExists),
+      },
     };
   }
 
@@ -97,7 +101,7 @@ export class AppService {
       data: {
         token,
         user: this.getUserBasicData(newUser),
-      }
+      },
     };
   }
 
@@ -131,12 +135,30 @@ export class AppService {
         firstName: user.firstName,
         lastName: user.lastName,
         onboardingStep: this.getUserOnboardingStep(user),
-      }
+      },
     };
   }
 
   getUserOnboardingStep(user: User) {
     if (!user.emailVerified) return 'email-verification';
     return 'dashboard';
+  }
+
+  async validateUser(token: string) {
+    try {
+      const verifiedToken = await this.authJwtService.validateToken(token);
+
+      if (!verifiedToken) {
+        throw new UnauthorizedException('User Authentication Failed');
+      }
+      return true;
+    } catch (e) {
+      throw [
+        {
+          status: 401,
+          message: e,
+        },
+      ];
+    }
   }
 }
