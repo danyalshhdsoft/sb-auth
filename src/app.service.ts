@@ -64,7 +64,13 @@ export class AppService {
       sub: userExists.id,
       email: userExists.email,
     });
-    return { token, user: this.getUserBasicData(userExists) };
+    return {
+        status: 200, 
+        data: {
+          token, 
+          user: this.getUserBasicData(userExists) 
+        }
+    };
   }
 
   async register(user: RegisterUserDto) {
