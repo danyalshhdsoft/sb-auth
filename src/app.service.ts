@@ -7,6 +7,8 @@ import { User } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { RegisterUserDto } from './dto/auth.dto';
 import { OTP_TOKEN_TYPES } from './schema/otp-tokens.schema';
+import { OtpTokensService } from './otp-tokens/otp-tokens.service';
+//import { EmailService } from './email/email.service';
 
 @Injectable()
 export class AppService {
@@ -14,6 +16,7 @@ export class AppService {
   constructor(
     private jwtService: JwtService,
     //private emailService: EmailService,
+    private verificationCodeService: OtpTokensService,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
@@ -80,10 +83,10 @@ export class AppService {
       password: hashPass,
     });
 
-    // const otp = await this.verificationCodeService.createVerificationCode(
-    //   newUser,
-    //   OTP_TOKEN_TYPES.EMAIL_VERIFICATION,
-    // );
+    const otp = await this.verificationCodeService.createVerificationCode(
+      newUser,
+      OTP_TOKEN_TYPES.EMAIL_VERIFICATION,
+    );
 
     //this.emailService.sendUserWelcome(newUser, otp.code);
 
@@ -125,13 +128,10 @@ export class AppService {
 
   getUserBasicData(user: User) {
     return {
-      status: 200,
-      data: {
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        onboardingStep: this.getUserOnboardingStep(user),
-      }
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      onboardingStep: this.getUserOnboardingStep(user),
     };
   }
 
