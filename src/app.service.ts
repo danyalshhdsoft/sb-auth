@@ -63,7 +63,9 @@ export class AppService {
       if (!userExists) {
         return await {
           status: 500,
-          data: 'Please register before login',
+          data: {
+            message: 'Please register before login'
+          },
         };
       }
 
@@ -84,8 +86,10 @@ export class AppService {
       return {
         status: 200,
         data: {
-          token,
-          user: this.getUserBasicData(userExists),
+          data: {
+            token,
+            user: this.getUserBasicData(userExists)
+          }
         },
       };
     }
@@ -181,13 +185,10 @@ export class AppService {
 
   getUserBasicData(user: User) {
     return {
-      status: 200,
-      data: {
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        onboardingStep: this.getUserOnboardingStep(user),
-      },
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      onboardingStep: this.getUserOnboardingStep(user),
     };
   }
 
