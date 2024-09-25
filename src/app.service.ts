@@ -8,7 +8,7 @@ import {
 import { GetUserRequest } from './get-user-request.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { Model } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 import { User } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { RegisterUserDto } from './dto/auth.dto';
@@ -28,7 +28,7 @@ export class AppService {
     private verificationCodeService: OtpTokensService,
     @InjectModel(User.name) private userModel: Model<User>,
     @Inject(ConfigService) private config: ConfigService,
-  ) {}
+  ) { }
 
   private readonly users: any[] = [
     {
@@ -50,40 +50,48 @@ export class AppService {
   }
 
   async signin(user: any) {
-    if (!user) {
+    try {
+      if (!user) {
+        return {
+          status: 500,
+          data: 'UnAuthenticated',
+        };
+      }
+      
+      const userExists = await this.findUserByEmail(user.email);
+
+      if (!userExists) {
+        return await {
+          status: 500,
+          data: 'Please register before login',
+        };
+      }
+
+      if (!(await bcrypt.compare(user.password, userExists?.password))) {
+        return {
+          status: 400,
+          data: {
+            message: "Incorrect Password"
+          },
+        };
+      }
+
+      const token = this.generateJwt({
+        sub: userExists.id,
+        email: userExists.email,
+      });
+      
       return {
-        status: 500,
-        data: 'UnAuthenticated',
+        status: 200,
+        data: {
+          token,
+          user: this.getUserBasicData(userExists),
+        },
       };
     }
-
-    const userExists = await this.findUserByEmail(user.email);
-
-    if (!userExists) {
-      return await {
-        status: 500,
-        data: 'Please register before login',
-      };
+    catch (err) {
+      throw new BadRequestException(err);
     }
-
-    if (!(await bcrypt.compare(user.password, userExists?.password))) {
-      return {
-        status: 400,
-        data: 'Incorrect Password',
-      };
-    }
-
-    const token = this.generateJwt({
-      sub: userExists.id,
-      email: userExists.email,
-    });
-    return {
-      status: 200,
-      data: {
-        token,
-        user: this.getUserBasicData(userExists),
-      },
-    };
   }
 
   async register(user: RegisterUserDto) {
@@ -128,6 +136,25 @@ export class AppService {
 
     this.emailService.resetPasswordEmail(user, link);
     return 'Reset Password Email Sent';
+  }
+
+  async resetPassword(password: string, userId: Schema.Types.ObjectId) {
+    const user = await this.userModel.findById(userId);
+
+    if (!user) {
+      throw new BadRequestException('User not found!');
+    }
+
+    const hashPass = await this.hashPassword(password);
+    user.password = hashPass;
+    await user.save();
+
+    return {
+      status: 200,
+      data: {
+        message: "Password reset Succesfully"
+      }
+    };
   }
 
   async hashPassword(password: string) {
