@@ -46,6 +46,13 @@ export class AppController {
       .catch(err => err);
   }
 
+  @MessagePattern('onboarding-verify')
+  async onboardingVerify(data: any) {
+    return await this.appService.onboardingVerify(data.value.password, data.value.userId)
+      .then(res => res)
+      .catch(err => err);
+  }
+
   // @UseGuards(JwtAuthGuard)
   // @Post('reset-password')
   // async ressetPassword(

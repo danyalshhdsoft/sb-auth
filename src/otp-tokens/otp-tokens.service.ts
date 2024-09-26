@@ -7,7 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import * as crypto from 'crypto';
 import { User } from 'src/schema/user.schema';
-import { OTP_TOKEN_TYPES, OtpTokens } from 'src/schema/otp-tokens.schema';
+import { OTP_TOKEN_TYPES, OtpTokens } from './schemas/otp-tokens.schema';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class OtpTokensService {
@@ -55,20 +56,20 @@ export class OtpTokensService {
         code: string,
         userId: ObjectId,
         type: OTP_TOKEN_TYPES,
-    ): Promise<OtpTokens> {
+    ) {
         const verificationCode = await this.findVerificationCode(
             code,
             userId,
             type,
         );
         if (!verificationCode) {
-            throw new NotFoundException('Verification code not found');
+            return false;
         }
         if (verificationCode.isUsed) {
-            throw new BadRequestException('Verification code is already used');
+            return false;
         }
         if (verificationCode.expiresAt < new Date()) {
-            throw new BadRequestException('Verification code is expired');
+            return false;
         }
         return verificationCode;
     }

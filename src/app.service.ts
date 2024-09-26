@@ -16,9 +16,10 @@ import { RegisterUserDto } from './dto/auth.dto';
 import { OtpTokensService } from './otp-tokens/otp-tokens.service';
 //import { EmailService } from './email/email.service';
 import { AuthJwtService } from './auth/jwt/jwt.service';
-import { OTP_TOKEN_TYPES } from './schema/otp-tokens.schema';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from './email/email.service';
+import { OTP_TOKEN_TYPES } from './otp-tokens/schemas/otp-tokens.schema';
+import ApiResponse from './utils/api-response-util';
 @Injectable()
 export class AppService {
   constructor(
@@ -100,6 +101,15 @@ export class AppService {
 
   async register(user: RegisterUserDto) {
     const hashPass = await this.hashPassword(user.password);
+    const existingUser = await this.userModel.findOne({ email: user.email});
+    if (existingUser) {
+      return {
+        status: 400,
+        data: {
+          message: "Email Already Exist"
+        }
+      }
+    }
     const newUser = await this.userModel.create({
       ...user,
       password: hashPass,
@@ -213,5 +223,27 @@ export class AppService {
         },
       ];
     }
+  }
+
+  async onboardingVerify(otp: string, userId: Schema.Types.ObjectId) {
+    const isOtpValid: any =
+      await this.verificationCodeService.checkIfCodeIsValid(
+        otp,
+        userId,
+        OTP_TOKEN_TYPES.EMAIL_VERIFICATION,
+      );
+
+    if (!isOtpValid) {
+      return new ApiResponse({message:"Invalid otp code"}, 400);
+    }
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      return new ApiResponse({message:"Invalid user"}, 400);
+    }
+
+    this.verificationCodeService.markCodeAsUsed(isOtpValid._id);
+    user.emailVerified = true;
+    await user.save();
+    return new ApiResponse({message: "Email Verified!"}, 200);
   }
 }
