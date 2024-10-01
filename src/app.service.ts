@@ -46,8 +46,8 @@ export class AppService {
     return 'Hello World!';
   }
 
-  getUser(getUserRequest: GetUserRequest) {
-    return this.users.find((user) => user.userId === getUserRequest.userId);
+  async getUser(getUserRequest: GetUserRequest) {
+    return await this.userModel.findOne({_id: getUserRequest.userId});
   }
 
   async signin(user: any) {

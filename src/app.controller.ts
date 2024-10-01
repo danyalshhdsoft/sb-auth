@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { MessagePattern, RpcException, Transport } from '@nestjs/microservices';
 import { AppService } from './app.service';
+import { EVENT_TOPICS } from './enums/event-topics.enum';
 
 @Controller()
 export class AppController {
@@ -11,42 +12,42 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @MessagePattern('get_user')
+  @MessagePattern(EVENT_TOPICS.GET_USER_DETAILS)
   getUser(data: any) {
     return this.appService.getUser(data.value)
       .then(res => res)
       .catch(err => err);
   }
 
-  @MessagePattern('login')
+  @MessagePattern(EVENT_TOPICS.LOGIN)
   async login(data: any) {
     return await this.appService.signin(data.value)
       .then(res => res)
       .catch(err => err)
   }
 
-  @MessagePattern('register')
+  @MessagePattern(EVENT_TOPICS.REGISTER)
   async register(data: any) {
     return await this.appService.register(data.value)
       .then(res => res)
       .catch(err => err);
   }
 
-  @MessagePattern('forgot-password')
+  @MessagePattern(EVENT_TOPICS.FORGOT_PASSWORD)
   async requestForgotPassword(data: any) {
     return await this.appService.forgotPasswordRequest(data.email)
       .then(res => res)
       .catch(err => err);
   }
 
-  @MessagePattern('reset-password')
+  @MessagePattern(EVENT_TOPICS.RESET_PASSWORD)
   async resetPassword(data: any) {
     return await this.appService.resetPassword(data.value.password, data.value.userId)
       .then(res => res)
       .catch(err => err);
   }
 
-  @MessagePattern('onboarding-verify')
+  @MessagePattern(EVENT_TOPICS.ONBOARDING_VERIFY)
   async onboardingVerify(data: any) {
     return await this.appService.onboardingVerify(data.value.password, data.value.userId)
       .then(res => res)
@@ -65,7 +66,7 @@ export class AppController {
   //   );
   // }
 
-  @MessagePattern('authorize_user', Transport.KAFKA) // Listening for 'authorize_user' event
+  @MessagePattern(EVENT_TOPICS.AUTHORIZE_USER, Transport.KAFKA) // Listening for 'authorize_user' event
   async authorizeUser(data: any) {
     try {
       console.log('Authorization Service pinging....');
