@@ -20,6 +20,7 @@ import { ConfigService } from '@nestjs/config';
 import { EmailService } from './email/email.service';
 import { OTP_TOKEN_TYPES } from './otp-tokens/schemas/otp-tokens.schema';
 import ApiResponse from './utils/api-response-util';
+import { Country } from './schema/country.schema';
 @Injectable()
 export class AppService {
   constructor(
@@ -28,6 +29,7 @@ export class AppService {
     private emailService: EmailService,
     private verificationCodeService: OtpTokensService,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Country.name) private countriesModel: Model<Country>,
     @Inject(ConfigService) private config: ConfigService,
   ) { }
 
@@ -47,7 +49,12 @@ export class AppService {
   }
 
   async getUser(getUserRequest: GetUserRequest) {
-    return await this.userModel.findOne({_id: getUserRequest.userId});
+    const select = { _id: 1, email: 1, userType: 1, firstName: 1, lastName: 1, country: 1 }
+    const user: any = await this.userModel.findOne({_id: getUserRequest.userId}, select);
+    return {
+      status: 200,
+      data: user
+    }
   }
 
   async signin(user: any) {
@@ -245,5 +252,16 @@ export class AppService {
     user.emailVerified = true;
     await user.save();
     return new ApiResponse({message: "Email Verified!"}, 200);
+  }
+
+  async getCountries() {
+    const countries = await this.countriesModel.find({});
+    console.log("===========================")
+    console.log(JSON.stringify(countries));
+
+    return {
+      status: 200,
+      data: countries
+    }
   }
 }

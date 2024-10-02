@@ -54,6 +54,13 @@ export class AppController {
       .catch(err => err);
   }
 
+  @MessagePattern(EVENT_TOPICS.GET_COUNTRIES)
+  async getCountries(data: any) {
+    return await this.appService.getCountries()
+      .then(res => res)
+      .catch(err => err);
+  }
+
   // @UseGuards(JwtAuthGuard)
   // @Post('reset-password')
   // async ressetPassword(

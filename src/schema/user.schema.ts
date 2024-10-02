@@ -87,7 +87,7 @@ export class User extends Document {
   })
   emailVerified: boolean;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Country' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Countries' })
   country?: mongoose.Types.ObjectId;
 
   //   @Prop({

@@ -8,6 +8,7 @@ import { User, UserSchema } from './schema/user.schema';
 import { OtpTokensModule } from './otp-tokens/otp-tokens.module';
 import { AuthJwtService } from './auth/jwt/jwt.service';
 import { EmailModule } from './email/email.module';
+import { Country, CountrySchema } from './schema/country.schema';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -37,6 +38,7 @@ import { EmailModule } from './email/email.module';
       }),
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Country.name, schema: CountrySchema }]),
     OtpTokensModule,
     EmailModule,
   ],
