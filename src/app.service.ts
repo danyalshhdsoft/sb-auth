@@ -11,7 +11,7 @@ import * as bcrypt from 'bcryptjs';
 import { Model, Schema } from 'mongoose';
 import { User } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { RegisterUserDto } from './dto/auth.dto';
+import { RegisterUserDto, UpdateUserDto } from './dto/auth.dto';
 // import { OTP_TOKEN_TYPES } from './schema/otp-tokens.schema';
 import { OtpTokensService } from './otp-tokens/otp-tokens.service';
 //import { EmailService } from './email/email.service';
@@ -139,6 +139,19 @@ export class AppService {
       data: {
         token,
         user: this.getUserBasicData(newUser),
+      },
+    };
+  }
+
+  async updateUser(updateUser: UpdateUserDto) {
+    let userId = updateUser.userId;
+    delete updateUser.userId;
+    await this.userModel.findByIdAndUpdate(userId, updateUser, { new: true });
+
+    return {
+      status: 200,
+      data: {
+        message: "User Updated Succesfully"
       },
     };
   }

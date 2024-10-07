@@ -33,6 +33,13 @@ export class AppController {
       .catch(err => err);
   }
 
+  @MessagePattern(EVENT_TOPICS.UPDATE_USER)
+  async updateUser(data: any) {
+    return await this.appService.updateUser(data.value)
+      .then(res => res)
+      .catch(err => err);
+  }
+
   @MessagePattern(EVENT_TOPICS.FORGOT_PASSWORD)
   async requestForgotPassword(data: any) {
     return await this.appService.forgotPasswordRequest(data.email)

@@ -67,6 +67,49 @@ export class RegisterUserDto {
   @IsOptional()
   serviceArea: mongoose.Types.ObjectId;
 }
+
+export class UpdateUserDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  profilePicUrl: string;
+
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
+
+  @IsString()
+  @IsNotEmpty()
+  whatsAppPhone: string;
+
+  @IsEnum(GENDER)
+  @IsNotEmpty()
+  gender: GENDER;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  country: mongoose.Types.ObjectId;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  userId: mongoose.Types.ObjectId;
+}
+
 export class LoginDto {
   @IsEmail()
   @IsNotEmpty()
