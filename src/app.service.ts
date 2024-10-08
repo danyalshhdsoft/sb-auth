@@ -49,7 +49,7 @@ export class AppService {
   }
 
   async getUser(getUserRequest: GetUserRequest) {
-    const select = { email: 1, userType: 1, firstName: 1, lastName: 1, country: 1 }
+    const select = { email: 1, userType: 1, firstName: 1, lastName: 1, country: 1, phone: 1 }
     const user: any = await this.userModel.findOne({_id: getUserRequest.userId}, select);
     return {
       status: 200,
@@ -127,7 +127,7 @@ export class AppService {
       OTP_TOKEN_TYPES.EMAIL_VERIFICATION,
     );
 
-    this.emailService.sendUserWelcome(newUser, otp.code);
+    //await this.emailService.sendUserWelcome(newUser, otp.code);
 
     const token = this.generateJwt({
       sub: newUser.id,
@@ -219,6 +219,7 @@ export class AppService {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      phone: user.phone,
       onboardingStep: this.getUserOnboardingStep(user),
     };
   }

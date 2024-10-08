@@ -4,6 +4,7 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsOptional,
+  IsPhoneNumber,
   IsString,
   Validate,
 } from 'class-validator';
@@ -35,7 +36,7 @@ export class RegisterUserDto {
   @IsNotEmpty()
   profilePicUrl: string;
 
-  @IsString()
+  @IsPhoneNumber()
   @IsNotEmpty()
   phone: string;
 
