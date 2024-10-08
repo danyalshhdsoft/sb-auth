@@ -82,11 +82,7 @@ export class UpdateUserDto {
   lastName: string;
 
   @IsString()
-  @IsNotEmpty()
-  password: string;
-
-  @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   profilePicUrl: string;
 
   @IsString()

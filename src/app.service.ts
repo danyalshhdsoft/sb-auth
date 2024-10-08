@@ -49,7 +49,7 @@ export class AppService {
   }
 
   async getUser(getUserRequest: GetUserRequest) {
-    const select = { _id: 1, email: 1, userType: 1, firstName: 1, lastName: 1, country: 1 }
+    const select = { email: 1, userType: 1, firstName: 1, lastName: 1, country: 1 }
     const user: any = await this.userModel.findOne({_id: getUserRequest.userId}, select);
     return {
       status: 200,
@@ -146,7 +146,8 @@ export class AppService {
   async updateUser(updateUser: UpdateUserDto) {
     let userId = updateUser.userId;
     delete updateUser.userId;
-    await this.userModel.findByIdAndUpdate(userId, updateUser, { new: true });
+    console.log(userId);
+    await this.userModel.findByIdAndUpdate(userId, updateUser);
 
     return {
       status: 200,
@@ -269,8 +270,6 @@ export class AppService {
 
   async getCountries() {
     const countries = await this.countriesModel.find({});
-    console.log("===========================")
-    console.log(JSON.stringify(countries));
 
     return {
       status: 200,
