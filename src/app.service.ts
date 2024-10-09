@@ -146,7 +146,6 @@ export class AppService {
   async updateUser(updateUser: UpdateUserDto) {
     let userId = updateUser.userId;
     delete updateUser.userId;
-    console.log(userId);
     await this.userModel.findByIdAndUpdate(userId, updateUser);
 
     return {

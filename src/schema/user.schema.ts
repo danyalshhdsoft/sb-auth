@@ -98,7 +98,7 @@ export class User extends Document {
   //   role?: Role;
 
   @Prop()
-  phone: number;
+  phone: string;
 
   @Prop()
   whatsapp: number;

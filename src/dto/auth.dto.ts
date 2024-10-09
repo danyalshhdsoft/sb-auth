@@ -86,7 +86,7 @@ export class UpdateUserDto {
   @IsOptional()
   profilePicUrl: string;
 
-  @IsString()
+  @IsPhoneNumber()
   @IsNotEmpty()
   phone: string;
 
